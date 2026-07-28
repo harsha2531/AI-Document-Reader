@@ -5,6 +5,8 @@ import Register from "./pages/Register";
 import WaitingApproval from "./pages/WaitingApproval";
 import Dashboard from "./pages/Dashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Files from "./pages/Files";
+import Profile from "./pages/Profile";
 
 export default function App() {
 
@@ -39,6 +41,23 @@ export default function App() {
 
                         <Dashboard />
 
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/files"
+                element={
+                    <ProtectedRoute>
+                        <Files />
+                    </ProtectedRoute>
+                }
+            />
+
+            <Route
+                path="/profile"
+                element={
+                    <ProtectedRoute>
+                        <Profile />
                     </ProtectedRoute>
                 }
             />
