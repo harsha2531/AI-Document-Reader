@@ -2,7 +2,7 @@ import axios from "axios";
 import { supabase } from "./auth";
 
 const api = axios.create({
-    baseURL: "http://localhost:5678/webhook",
+    baseURL: "https://n8n-b0y5.srv1803042.hstgr.cloud/webhook",
 });
 
 api.interceptors.request.use(async (config) => {
