@@ -1,57 +1,162 @@
+import { useEffect, useState } from "react";
 import UserLayout from "../layouts/UserLayout";
-import { useAuth } from "../context/AuthContext";
+import api from "../services/api";
 
 export default function Profile() {
 
-    const { profile } = useAuth();
+    const [profile, setProfile] = useState(null);
+
+    const [loading, setLoading] = useState(true);
+
+    const [error, setError] = useState("");
+
+    async function loadProfile() {
+
+        try {
+
+            setLoading(true);
+
+            setError("");
+
+            const response = await api.get(
+                "/profile"
+            );
+
+            if (response.data.success) {
+
+                setProfile(
+                    response.data.profile
+                );
+
+            } else {
+
+                setError(
+                    response.data.message ||
+                    "Unable to load profile."
+                );
+
+            }
+
+        } catch (error) {
+
+            console.error(
+                "Profile error:",
+                error
+            );
+
+            setError(
+                "Unable to load profile."
+            );
+
+        } finally {
+
+            setLoading(false);
+
+        }
+
+    }
+
+    useEffect(() => {
+
+        loadProfile();
+
+    }, []);
 
     return (
 
         <UserLayout>
 
-            <h2>Profile</h2>
+            <h2>
+                My Profile
+            </h2>
 
             <hr />
 
-            <p>
+            {loading && (
 
-                <strong>Name:</strong>
+                <p>
+                    Loading profile...
+                </p>
 
-                {" "}
+            )}
 
-                {profile?.full_name}
+            {error && (
 
-            </p>
+                <div className="alert alert-danger">
 
-            <p>
+                    {error}
 
-                <strong>Department:</strong>
+                </div>
 
-                {" "}
+            )}
 
-                {profile?.department}
+            {profile && (
 
-            </p>
+                <div className="card">
 
-            <p>
+                    <div className="card-body">
 
-                <strong>Role:</strong>
+                        <h5 className="card-title mb-4">
+                            Account Information
+                        </h5>
 
-                {" "}
+                        <p>
 
-                {profile?.role}
+                            <strong>Name:</strong>{" "}
 
-            </p>
+                            {profile.full_name || "-"}
 
-            <p>
+                        </p>
 
-                <strong>Approved:</strong>
+                        <p>
 
-                {" "}
+                            <strong>Email:</strong>{" "}
 
-                {profile?.approved ? "Yes" : "No"}
+                            {profile.email || "-"}
 
-            </p>
+                        </p>
+
+                        <p>
+
+                            <strong>Department:</strong>{" "}
+
+                            {profile.department || "-"}
+
+                        </p>
+
+                        <p>
+
+                            <strong>Role:</strong>{" "}
+
+                            {profile.role || "-"}
+
+                        </p>
+
+                        <p>
+
+                            <strong>Approval Status:</strong>{" "}
+
+                            {profile.approved ? (
+
+                                <span className="badge bg-success">
+                                    Approved
+                                </span>
+
+                            ) : (
+
+                                <span className="badge bg-warning text-dark">
+                                    Pending
+                                </span>
+
+                            )}
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+            )}
 
         </UserLayout>
 
