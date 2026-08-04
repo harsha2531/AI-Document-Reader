@@ -26,7 +26,7 @@ export default function UploadButton({ refreshFiles }) {
                 formData
             );
 
-            if (response.data.success) {
+            if (response.data) {
 
                 alert("File uploaded successfully.");
 
@@ -35,7 +35,7 @@ export default function UploadButton({ refreshFiles }) {
             } else {
 
                 alert(
-                    response.data.message ||
+                    response.data ||
                     "Upload failed."
                 );
 
