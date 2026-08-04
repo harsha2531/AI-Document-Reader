@@ -7,6 +7,7 @@ import Dashboard from "./pages/Dashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Files from "./pages/Files";
 import Profile from "./pages/Profile";
+import Admin from "./pages/Admin";
 
 export default function App() {
 
@@ -58,6 +59,14 @@ export default function App() {
                 element={
                     <ProtectedRoute>
                         <Profile />
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/admin"
+                element={
+                    <ProtectedRoute>
+                        <Admin />
                     </ProtectedRoute>
                 }
             />
