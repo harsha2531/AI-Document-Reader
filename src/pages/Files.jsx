@@ -7,7 +7,10 @@ import api from "../services/api";
 export default function Files() {
 
     const [files, setFiles] = useState([]);
+
     const [loading, setLoading] = useState(true);
+
+    const [error, setError] = useState("");
 
     async function loadFiles() {
 
@@ -15,19 +18,37 @@ export default function Files() {
 
             setLoading(true);
 
-            const response = await api.get("/files/list");
+            setError("");
+
+            const response = await api.get(
+                "/files/list"
+            );
 
             if (response.data.success) {
 
-                setFiles(response.data.files);
+                setFiles(
+                    response.data.files || []
+                );
+
+            } else {
+
+                setError(
+                    response.data.message ||
+                    "Unable to load files."
+                );
 
             }
 
         } catch (error) {
 
-            console.error(error);
+            console.error(
+                "Load files error:",
+                error
+            );
 
-            alert("Failed to load files.");
+            setError(
+                "Unable to load department files."
+            );
 
         } finally {
 
@@ -49,11 +70,33 @@ export default function Files() {
 
             <div className="d-flex justify-content-between align-items-center mb-4">
 
-                <h2>Department Files</h2>
+                <div>
 
-                <UploadButton refreshFiles={loadFiles} />
+                    <h2>
+                        Department Files
+                    </h2>
+
+                    <p className="text-muted mb-0">
+                        Manage files belonging to your department.
+                    </p>
+
+                </div>
+
+                <UploadButton
+                    refreshFiles={loadFiles}
+                />
 
             </div>
+
+            {error && (
+
+                <div className="alert alert-danger">
+
+                    {error}
+
+                </div>
+
+            )}
 
             <FileTable
                 files={files}
