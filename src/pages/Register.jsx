@@ -1,124 +1,378 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { Link, useNavigate } from "react-router-dom";
+import { supabase } from "../services/auth";
 
 export default function Register() {
 
     const navigate = useNavigate();
 
-    const { register } = useAuth();
-
     const [fullName, setFullName] = useState("");
-
     const [email, setEmail] = useState("");
-
+    const [department, setDepartment] = useState("");
     const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
 
-    const [department, setDepartment] = useState("Sales");
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+    const [success, setSuccess] = useState("");
 
-    async function handleSubmit(e) {
+    async function handleRegister(event) {
 
-        e.preventDefault();
+        event.preventDefault();
 
-        const result = await register(
+        setError("");
+        setSuccess("");
 
-            fullName,
+        if (
+            !fullName ||
+            !email ||
+            !department ||
+            !password ||
+            !confirmPassword
+        ) {
 
-            email,
-
-            password,
-
-            department
-
-        );
-
-        if (result.error) {
-
-            alert(result.error.message);
+            setError(
+                "Please complete all required fields."
+            );
 
             return;
-
         }
 
-        alert("Registration Successful");
+        if (password.length < 6) {
 
-        navigate("/waiting");
+            setError(
+                "Password must contain at least 6 characters."
+            );
+
+            return;
+        }
+
+        if (password !== confirmPassword) {
+
+            setError(
+                "Passwords do not match."
+            );
+
+            return;
+        }
+
+        try {
+
+            setLoading(true);
+
+            /*
+             * IMPORTANT:
+             * A public registration can NEVER choose
+             * the admin role.
+             *
+             * New users are always created as:
+             *
+             * role = user
+             * approved = false
+             */
+
+            const {
+                data,
+                error
+            } = await supabase.auth.signUp({
+
+                email: email.trim(),
+
+                password: password,
+
+                options: {
+
+                    data: {
+
+                        full_name:
+                            fullName.trim(),
+
+                        department:
+                            department,
+
+                        role: "user"
+
+                    }
+
+                }
+
+            });
+
+            if (error) {
+
+                setError(error.message);
+
+                return;
+            }
+
+            /*
+             * If email confirmation is enabled,
+             * Supabase may require the user to
+             * confirm their email first.
+             */
+
+            if (data.user) {
+
+                setSuccess(
+                    "Registration submitted successfully. " +
+                    "Your account is waiting for administrator approval."
+                );
+
+                setTimeout(() => {
+
+                    navigate("/waiting");
+
+                }, 2000);
+
+            }
+
+        } catch (error) {
+
+            console.error(
+                "Registration error:",
+                error
+            );
+
+            setError(
+                error.message ||
+                "Unable to create your account."
+            );
+
+        } finally {
+
+            setLoading(false);
+
+        }
 
     }
 
     return (
 
-        <div className="container mt-5">
+        <div className="auth-page">
 
-            <h2>Register</h2>
+            <div className="auth-card register-card">
 
-            <form onSubmit={handleSubmit}>
+                <div className="text-center mb-4">
 
-                <input
+                    <div className="system-icon">
+                        AI
+                    </div>
 
-                    className="form-control mb-3"
+                    <h1 className="system-name">
+                        AI Multiple Documents Reader
+                    </h1>
 
-                    placeholder="Full Name"
+                    <p className="company-name">
+                        Startup Solutions (Pvt) Ltd
+                    </p>
 
-                    value={fullName}
+                    <p className="text-muted">
+                        Create your account
+                    </p>
 
-                    onChange={(e)=>setFullName(e.target.value)}
+                </div>
 
-                />
+                {error && (
 
-                <input
+                    <div className="alert alert-danger">
+                        {error}
+                    </div>
 
-                    className="form-control mb-3"
+                )}
 
-                    placeholder="Email"
+                {success && (
 
-                    type="email"
+                    <div className="alert alert-success">
+                        {success}
+                    </div>
 
-                    value={email}
+                )}
 
-                    onChange={(e)=>setEmail(e.target.value)}
+                <form onSubmit={handleRegister}>
 
-                />
+                    <div className="mb-3">
 
-                <input
+                        <label className="form-label">
+                            Full Name
+                        </label>
 
-                    className="form-control mb-3"
+                        <input
+                            type="text"
+                            className="form-control"
+                            placeholder="Enter your full name"
+                            value={fullName}
+                            onChange={(event) =>
+                                setFullName(
+                                    event.target.value
+                                )
+                            }
+                            autoComplete="name"
+                            required
+                        />
 
-                    placeholder="Password"
+                    </div>
 
-                    type="password"
+                    <div className="mb-3">
 
-                    value={password}
+                        <label className="form-label">
+                            Email Address
+                        </label>
 
-                    onChange={(e)=>setPassword(e.target.value)}
+                        <input
+                            type="email"
+                            className="form-control"
+                            placeholder="Enter your email"
+                            value={email}
+                            onChange={(event) =>
+                                setEmail(
+                                    event.target.value
+                                )
+                            }
+                            autoComplete="email"
+                            required
+                        />
 
-                />
+                    </div>
 
-                <select
+                    <div className="mb-3">
 
-                    className="form-select mb-3"
+                        <label className="form-label">
+                            Department
+                        </label>
 
-                    value={department}
+                        <select
+                            className="form-select"
+                            value={department}
+                            onChange={(event) =>
+                                setDepartment(
+                                    event.target.value
+                                )
+                            }
+                            required
+                        >
 
-                    onChange={(e)=>setDepartment(e.target.value)}
+                            <option value="">
+                                Select your department
+                            </option>
 
-                >
+                            <option value="Sales">
+                                Sales
+                            </option>
 
-                    <option>Sales</option>
+                            <option value="Marketing">
+                                Marketing
+                            </option>
 
-                    <option>Marketing</option>
+                            <option value="HR">
+                                HR
+                            </option>
 
-                    <option>HR</option>
+                        </select>
 
-                </select>
+                    </div>
 
-                <button className="btn btn-primary">
+                    <div className="mb-3">
 
-                    Register
+                        <label className="form-label">
+                            Password
+                        </label>
 
-                </button>
+                        <input
+                            type="password"
+                            className="form-control"
+                            placeholder="Create a password"
+                            value={password}
+                            onChange={(event) =>
+                                setPassword(
+                                    event.target.value
+                                )
+                            }
+                            autoComplete="new-password"
+                            required
+                        />
 
-            </form>
+                        <small className="text-muted">
+                            Minimum 6 characters
+                        </small>
+
+                    </div>
+
+                    <div className="mb-4">
+
+                        <label className="form-label">
+                            Confirm Password
+                        </label>
+
+                        <input
+                            type="password"
+                            className="form-control"
+                            placeholder="Confirm your password"
+                            value={confirmPassword}
+                            onChange={(event) =>
+                                setConfirmPassword(
+                                    event.target.value
+                                )
+                            }
+                            autoComplete="new-password"
+                            required
+                        />
+
+                    </div>
+
+                    <button
+                        type="submit"
+                        className="btn btn-primary w-100"
+                        disabled={loading}
+                    >
+
+                        {loading
+                            ? "Creating Account..."
+                            : "Create Account"
+                        }
+
+                    </button>
+
+                </form>
+
+                <div className="approval-notice mt-4">
+
+                    <strong>
+                        Account Approval Required
+                    </strong>
+
+                    <p className="mb-0 mt-1">
+                        Your account must be approved by
+                        an administrator before you can
+                        access the system.
+                    </p>
+
+                </div>
+
+                <div className="text-center mt-4">
+
+                    <p className="mb-0 text-muted">
+                        Already have an account?
+                    </p>
+
+                    <Link
+                        to="/login"
+                        className="fw-semibold"
+                    >
+                        Sign in here
+                    </Link>
+
+                </div>
+
+                <div className="auth-footer">
+
+                    <small>
+                        Secure document management powered by
+                        AI and automation
+                    </small>
+
+                </div>
+
+            </div>
 
         </div>
 

@@ -1,0 +1,170 @@
+.auth-page {
+
+    min-height: 100vh;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    padding: 30px 15px;
+
+    background:
+            linear-gradient(
+                    135deg,
+                    #eef4ff 0%,
+                    #f8f9fa 50%,
+                    #e9f2ff 100%
+            );
+
+}
+
+.auth-card {
+
+    width: 100%;
+
+    max-width: 430px;
+
+    background: white;
+
+    border-radius: 16px;
+
+    padding: 40px;
+
+    box-shadow:
+            0 10px 35px
+            rgba(0, 0, 0, 0.10);
+
+}
+
+.register-card {
+
+    max-width: 500px;
+
+}
+
+.system-icon {
+
+    width: 58px;
+
+    height: 58px;
+
+    margin: 0 auto 15px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 14px;
+
+    background: #0d6efd;
+
+    color: white;
+
+    font-size: 20px;
+
+    font-weight: 700;
+
+    letter-spacing: 1px;
+
+}
+
+.system-name {
+
+    font-size: 24px;
+
+    font-weight: 700;
+
+    margin-bottom: 6px;
+
+    color: #212529;
+
+}
+
+.company-name {
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    color: #6c757d;
+
+    margin-bottom: 8px;
+
+}
+
+.form-label {
+
+    font-weight: 600;
+
+}
+
+.form-control,
+.form-select {
+
+    min-height: 46px;
+
+    border-radius: 8px;
+
+}
+
+.btn {
+
+    min-height: 46px;
+
+    border-radius: 8px;
+
+    font-weight: 600;
+
+}
+
+.approval-notice {
+
+    padding: 14px 16px;
+
+    border-radius: 8px;
+
+    background: #fff8e1;
+
+    border: 1px solid #ffe082;
+
+    color: #664d03;
+
+    font-size: 14px;
+
+}
+
+.auth-footer {
+
+    text-align: center;
+
+    margin-top: 25px;
+
+    color: #8a8f98;
+
+}
+
+.auth-footer small {
+
+    font-size: 12px;
+
+}
+
+@media (max-width: 576px) {
+
+    .auth-card {
+
+        padding: 28px 22px;
+
+    }
+
+    .system-name {
+
+        font-size: 21px;
+
+    }
+
+}
