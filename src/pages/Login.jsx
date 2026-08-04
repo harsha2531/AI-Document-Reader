@@ -1,84 +1,188 @@
 import { useState } from "react";
-
-import { useNavigate } from "react-router-dom";
-
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
-export default function Login(){
+export default function Login() {
 
-    const { login, profile } = useAuth();
+    const navigate = useNavigate();
 
-    const navigate=useNavigate();
+    const { login } = useAuth();
 
-    const[email,setEmail]=useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
 
-    const[password,setPassword]=useState("");
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
 
-    async function handleLogin(e){
+    async function handleLogin(event) {
 
-        e.preventDefault();
+        event.preventDefault();
 
-        const {error}=await login(email,password);
+        setError("");
 
-        if(error){
+        if (!email || !password) {
 
-            alert(error.message);
+            setError(
+                "Please enter your email and password."
+            );
 
             return;
-
         }
 
-        if(profile?.approved){
+        try {
+
+            setLoading(true);
+
+            const result = await login(
+                email,
+                password
+            );
+
+            if (result?.error) {
+
+                setError(
+                    result.error.message ||
+                    "Invalid email or password."
+                );
+
+                return;
+            }
 
             navigate("/dashboard");
 
-        }
+        } catch (error) {
 
-        else{
+            console.error("Login error:", error);
 
-            navigate("/waiting");
+            setError(
+                error.message ||
+                "Unable to sign in. Please try again."
+            );
+
+        } finally {
+
+            setLoading(false);
 
         }
 
     }
 
-    return(
+    return (
 
-        <div className="container mt-5">
+        <div className="auth-page">
 
-            <h2>Login</h2>
+            <div className="auth-card">
 
-            <form onSubmit={handleLogin}>
+                <div className="text-center mb-4">
 
-                <input
+                    <div className="system-icon">
+                        AI
+                    </div>
 
-                    className="form-control mb-3"
+                    <h1 className="system-name">
+                        AI Multiple Documents Reader
+                    </h1>
 
-                    placeholder="Email"
+                    <p className="company-name">
+                        Startup Solutions (Pvt) Ltd
+                    </p>
 
-                    onChange={(e)=>setEmail(e.target.value)}
+                    <p className="text-muted">
+                        Sign in to your account
+                    </p>
 
-                />
+                </div>
 
-                <input
+                {error && (
 
-                    type="password"
+                    <div className="alert alert-danger">
+                        {error}
+                    </div>
 
-                    className="form-control mb-3"
+                )}
 
-                    placeholder="Password"
+                <form onSubmit={handleLogin}>
 
-                    onChange={(e)=>setPassword(e.target.value)}
+                    <div className="mb-3">
 
-                />
+                        <label className="form-label">
+                            Email Address
+                        </label>
 
-                <button className="btn btn-success">
+                        <input
+                            type="email"
+                            className="form-control"
+                            placeholder="Enter your email"
+                            value={email}
+                            onChange={(event) =>
+                                setEmail(event.target.value)
+                            }
+                            autoComplete="email"
+                            required
+                        />
 
-                    Login
+                    </div>
 
-                </button>
+                    <div className="mb-3">
 
-            </form>
+                        <label className="form-label">
+                            Password
+                        </label>
+
+                        <input
+                            type="password"
+                            className="form-control"
+                            placeholder="Enter your password"
+                            value={password}
+                            onChange={(event) =>
+                                setPassword(event.target.value)
+                            }
+                            autoComplete="current-password"
+                            required
+                        />
+
+                    </div>
+
+                    <button
+                        type="submit"
+                        className="btn btn-primary w-100"
+                        disabled={loading}
+                    >
+
+                        {loading
+                            ? "Signing in..."
+                            : "Sign In"
+                        }
+
+                    </button>
+
+                </form>
+
+                <div className="text-center mt-4">
+
+                    <p className="mb-0 text-muted">
+                        Don't have an account?
+                    </p>
+
+                    <Link
+                        to="/register"
+                        className="fw-semibold"
+                    >
+                        Create a new account
+                    </Link>
+
+                </div>
+
+                <div className="auth-footer">
+
+                    <small>
+                        Secure document management powered by
+                        AI and automation
+                    </small>
+
+                </div>
+
+            </div>
 
         </div>
 
