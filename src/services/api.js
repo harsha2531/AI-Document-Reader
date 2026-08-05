@@ -1,8 +1,11 @@
 import axios from "axios";
 import { supabase } from "./auth";
+const n8nURL = import.meta.env.VITE_N8N_WEBHOOK_URL;
+
 
 const api = axios.create({
-    baseURL: "https://n8n-b0y5.srv1803042.hstgr.cloud/webhook-test",
+    baseURL: n8nURL,
+
 });
 
 api.interceptors.request.use(async (config) => {
