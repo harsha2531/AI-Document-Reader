@@ -15,6 +15,7 @@ export default function Profile() {
     // LOAD PROFILE
     // =====================================================
 
+
     async function loadProfile() {
 
         try {
@@ -132,28 +133,6 @@ export default function Profile() {
                         Loading profile...
                     </p>
 
-                </div>
-
-            </UserLayout>
-
-        );
-
-    }
-
-
-    // =====================================================
-    // ERROR
-    // =====================================================
-
-    if (error) {
-
-        return (
-
-            <UserLayout>
-
-                <div className="alert alert-danger">
-
-                    {error}
 
                 </div>
 
@@ -162,18 +141,24 @@ export default function Profile() {
         );
 
     }
+
+
 
 
     // =====================================================
     // PROFILE NOT FOUND
     // =====================================================
 
-    if (!profile) {
+    if (!profile && !loading) {
 
         return (
 
             <UserLayout>
+                <div className="alert alert-danger">
 
+                    {error}
+
+                </div>
                 <div className="alert alert-warning">
 
                     Profile information is not available.
@@ -185,7 +170,6 @@ export default function Profile() {
         );
 
     }
-
 
     // =====================================================
     // PROFILE PAGE
@@ -206,6 +190,15 @@ export default function Profile() {
                 </p>
 
             </div>
+            {error && profile.length === 0 && (
+
+                <div className="alert alert-danger">
+
+                    {error}
+
+                </div>
+
+            )}
 
 
             <div className="row">
