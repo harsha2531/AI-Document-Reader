@@ -36,6 +36,8 @@ export default function Files() {
                 response.data
             );
 
+            //1
+            let fileList = [];
 
             // n8n returns a direct array:
             //
@@ -50,17 +52,55 @@ export default function Files() {
 
             if (Array.isArray(response.data)) {
 
-                setFiles(response.data);
+                //2
+                fileList = response.data;
+                // setFiles(response.data);
 
-            } else {
+            } else if(
+                //3
+                response.data &&
+                Array.isArray(response.data.files))
+                // setFiles([]);
+                fileList = response.data.files;
 
-                setFiles([]);
+                // setError(
+                //     "Invalid file data received from server."
+                // );
 
-                setError(
-                    "Invalid file data received from server."
+                // =====================================================
+                // Unknown response
+                // =====================================================
+
+            else {
+                    console.error(
+                        "Unexpected API response:",
+                        response.data
+                    );
+
+                    setFiles([]);
+
+                    setError(
+                        "Unexpected response from server."
+                    );
+
+                    return;
+                }
+
+                console.log(
+                    "Files loaded successfully:",
+                    fileList
                 );
 
-            }
+                // =====================================================
+                // SUCCESS
+                // =====================================================
+
+                setFiles(fileList);
+
+                // IMPORTANT:
+                // Remove any previous error after successful loading
+                setError("");
+
 
 
         } catch (error) {
@@ -132,7 +172,7 @@ export default function Files() {
             </div>
 
 
-            {/*{error && (
+            {error && files.length === 0 && (
 
                 <div className="alert alert-danger">
 
@@ -140,7 +180,7 @@ export default function Files() {
 
                 </div>
 
-            )}*/}
+            )}
 
 
             <FileTable

@@ -18,107 +18,99 @@ export default function Admin() {
     // =====================================================
 
     async function loadUsers() {
-
         try {
-
             setLoading(true);
 
+            // Clear any previous error before loading
             setError("");
 
             console.log("Loading admin users...");
 
-            const response = await api.get(
-                "/admin/users"
-            );
+            const response = await api.get("/admin/users");
 
             console.log(
                 "Admin users API response:",
                 response.data
             );
 
-
-            // -------------------------------------------------
-            // Handle different n8n response formats
-            // -------------------------------------------------
-
             let userList = [];
 
-
-            // Format A:
+            // =====================================================
+            // Format A
             // {
             //    success: true,
             //    users: [...]
             // }
+            // =====================================================
 
             if (
                 response.data &&
                 response.data.success === true
             ) {
-
-                userList =
-                    response.data.users || [];
-
+                userList = response.data.users || [];
             }
 
-
-            // Format B:
-            // [
-            //    {...},
-            //    {...}
-            // ]
+                // =====================================================
+                // Format B
+                // [
+                //    {...},
+                //    {...}
+                // ]
+            // =====================================================
 
             else if (
                 Array.isArray(response.data)
             ) {
-
                 userList = response.data;
-
             }
 
-
-            // Format C:
-            // {
-            //    users: [...]
-            // }
+                // =====================================================
+                // Format C
+                // {
+                //    users: [...]
+                // }
+            // =====================================================
 
             else if (
                 response.data &&
-                Array.isArray(
-                    response.data.users
-                )
+                Array.isArray(response.data.users)
             ) {
-
-                userList =
-                    response.data.users;
-
+                userList = response.data.users;
             }
 
-
-            // Unknown response
+                // =====================================================
+                // Unknown response
+            // =====================================================
 
             else {
-
                 console.error(
                     "Unexpected API response:",
                     response.data
                 );
+
+                setUsers([]);
 
                 setError(
                     "Unexpected response from server."
                 );
 
                 return;
-
             }
 
-
             console.log(
-                "Users loaded:",
+                "Users loaded successfully:",
                 userList
             );
 
+            // =====================================================
+            // SUCCESS
+            // =====================================================
+
             setUsers(userList);
 
+            // IMPORTANT:
+            // Remove any previous error after successful loading
+            setError("");
 
         } catch (error) {
 
@@ -127,19 +119,12 @@ export default function Admin() {
                 error
             );
 
+            console.error(
+                "Server response:",
+                error.response?.data
+            );
 
-            if (
-                error.response
-            ) {
-
-                console.error(
-                    "Server response:",
-                    error.response.data
-                );
-
-            }
-
-
+            // Only show error when the request actually fails
             setError(
                 error.response?.data?.message ||
                 "Unable to load users."
@@ -148,9 +133,7 @@ export default function Admin() {
         } finally {
 
             setLoading(false);
-
         }
-
     }
 
 
@@ -297,7 +280,7 @@ export default function Admin() {
             </div>
 
 
-            {/*{error && (
+            {error && users.length === 0 && (
 
                 <div className="alert alert-danger">
 
@@ -305,7 +288,7 @@ export default function Admin() {
 
                 </div>
 
-            )}*/}
+            )}
 
 
             {loading ? (
