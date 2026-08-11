@@ -8,6 +8,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Files from "./pages/Files";
 import Profile from "./pages/Profile";
 import Admin from "./pages/Admin";
+import Chat from "./pages/Chat";
 
 export default function App() {
 
@@ -67,6 +68,14 @@ export default function App() {
                 element={
                     <ProtectedRoute>
                         <Admin />
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/chat"
+                element={
+                    <ProtectedRoute>
+                        <Chat />
                     </ProtectedRoute>
                 }
             />
